@@ -1,0 +1,377 @@
+clc
+clear all
+
+TG_in = csvread('...\traffic_growth.csv',1,0);
+
+y = 1980:2017;
+% Convereting integers to an array of strings
+yrs = strtrim(cellstr(num2str(y'))');
+% Add prefix to the created string arrey
+pave_years = strcat('Year_',yrs);
+
+py = TG_in(:,4);
+AC = TG_in(:,2);
+
+% store traffic data from 1980 to 2017 in substrucutre folders
+for i=1:length(pave_years)
+    n = 0;
+    for j=1:length(TG_in)
+        if y(i) == py(j)
+            n = n+1;
+            TG.(pave_years{i}) (n,:) = TG_in(j,1:(43-i));
+        end
+    end
+end
+
+
+%%
+% Calculate the scenario of "no traffic volume growth", "growth by 1% per
+% year", and "growth by 2% per year"
+
+z = zeros(1,101);
+for i = 2:length(pave_years)
+    [rrr,ccc] = size(TG.(pave_years{i}));
+    for n = 1:rrr
+        FT_t = [TG.(pave_years{i})(n,:) z];
+        TG_beta.(pave_years{i})(n,:) = FT_t;
+    end
+end
+
+%% Traffic wont grow after 2017
+
+TG_beta_base = TG_beta;
+
+for  i = 2:length(pave_years)
+    [rrr,ccc] = size(TG_beta_base.(pave_years{i}));
+    c_read = 42 - i;
+    c_write = 43 - i;
+    for n =1:rrr
+        for w = 1:ccc
+            tr = TG_beta_base.(pave_years{i})(n,(c_read+w));
+            TG_beta_base.(pave_years{i})(n,(c_write+w)) = tr;
+        end
+    end
+end
+
+%% Traffic grows by 1% after 2017
+
+TG_beta_1pct = TG_beta;
+
+for  i = 2:length(pave_years)
+    [rrr,ccc] = size(TG_beta_1pct.(pave_years{i}));
+    c_read = 42 - i;
+    c_write = 43 - i;
+    for n =1:rrr
+        for w = 1:ccc
+            tr = TG_beta_1pct.(pave_years{i})(n,(c_read+w));
+            TG_beta_1pct.(pave_years{i})(n,(c_write+w)) = tr*1.01;
+        end
+    end
+end
+
+%% Traffic grows by 2% after 2017
+
+TG_beta_2pct = TG_beta;
+
+for  i = 2:length(pave_years)
+    [rrr,ccc] = size(TG_beta_2pct.(pave_years{i}));
+    c_read = 42 - i;
+    c_write = 43 - i;
+    for n =1:rrr
+        for w = 1:ccc
+            tr = TG_beta_2pct.(pave_years{i})(n,(c_read+w));
+            TG_beta_2pct.(pave_years{i})(n,(c_write+w)) = tr*1.02;
+        end
+    end
+end
+
+% Calculate how many of roads change switch their traffic class to the
+% higher, lower, or stay in their initial class
+%% calculating the share of changes in traffic classes in different paved years before 2018
+
+% clustring each year into the seven traffic class 
+cl = 1:7;
+cls = strtrim(cellstr(num2str(cl'))');
+C = strcat('C',cls);
+
+for i = 2:length(pave_years)
+    [rrr,ccc] = size(TG_beta_2pct.(pave_years{i}));
+    AC = TG_beta_2pct.(pave_years{i})(:,2);
+    tgc = [76 59 46 42 39 40 41];
+    for j = 1:7
+        k = [];
+        a = [];
+        a_300 = [];
+        a_1500 = [];
+        a_3000 = [];
+        a_5000 = [];
+        a_10000 = [];
+        a_20000 = [];
+        a_over_20000 = [];
+        k = TG_beta_2pct.(pave_years{i})(AC==j,:);
+        [kr,kc] = size(k);
+        for w = 1:kr
+            if k(w,tgc(j))<=300
+                a_300(w,:) = k(w,:);
+            elseif k(w,tgc(j))> 300 && k(w,tgc(j))<=1500
+                a_1500(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 1500 && k(w,tgc(j))<=3000
+                a_3000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 3000 && k(w,tgc(j))<=5000
+                a_5000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 5000 && k(w,tgc(j))<=10000
+                a_10000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 10000 && k(w,tgc(j))<=20000
+                a_20000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 20000
+                a_over_20000(w,:)=k(w,:);
+            end
+        end
+        if exist('a_300') ~= 1|| isempty(a_300)
+            t_a_300 = 0;
+        else
+            t_a_300 = sum(a_300(:,1))*sum(a_300(:,3));
+        end
+        if exist('a_1500') ~= 1 || isempty(a_1500)
+            t_a_1500 = 0;
+        else
+            t_a_1500 = sum(a_1500(:,1))*sum(a_1500(:,3));
+        end
+        if exist('a_3000') ~= 1 || isempty(a_3000)
+            t_a_3000 = 0;
+        else
+            t_a_3000 = sum(a_3000(:,1))*sum(a_3000(:,3));
+        end
+        if exist('a_5000') ~= 1 || isempty(a_5000)
+            t_a_5000 = 0;
+        else
+            t_a_5000 = sum(a_5000(:,1))*sum(a_5000(:,3));
+        end
+        if exist('a_10000') ~= 1 || isempty(a_10000)
+            t_a_10000 = 0;
+        else
+            t_a_10000 = sum(a_10000(:,1))*sum(a_10000(:,3));
+        end
+        if exist('a_20000') ~= 1 || isempty(a_20000)
+            t_a_20000 = 0;
+        else
+            t_a_20000 = sum(a_20000(:,1))*sum(a_20000(:,3));
+        end
+        if exist('a_over_20000') ~= 1 || isempty(a_over_20000)
+            t_a_over_20000 = 0;
+        else
+            t_a_over_20000 = sum(a_over_20000(:,1))*sum(a_over_20000(:,3));
+        end
+        a = t_a_300+t_a_1500+t_a_3000+t_a_5000+t_a_10000+t_a_20000+t_a_over_20000;
+        if isempty(a)
+            share.(pave_years{i}).(C{j})(j,1) = 0;
+            share.(pave_years{i}).(C{j})(j,2) = 0;
+            share.(pave_years{i}).(C{j})(j,3) = 0;
+            share.(pave_years{i}).(C{j})(j,4) = 0;
+            share.(pave_years{i}).(C{j})(j,5) = 0;
+            share.(pave_years{i}).(C{j})(j,6) = 0;
+            share.(pave_years{i}).(C{j})(j,7) = 0;
+        else
+            share.(pave_years{i}).(C{j})(j,1) = t_a_300/a;
+            share.(pave_years{i}).(C{j})(j,2) = t_a_1500/a;
+            share.(pave_years{i}).(C{j})(j,3) = t_a_3000/a;
+            share.(pave_years{i}).(C{j})(j,4) = t_a_5000/a;
+            share.(pave_years{i}).(C{j})(j,5) = t_a_10000/a;
+            share.(pave_years{i}).(C{j})(j,6) = t_a_20000/a;
+            share.(pave_years{i}).(C{j})(j,7) = t_a_over_20000/a;
+        end
+    end
+end
+
+for i = 2:length(pave_years)
+    for j = 1:7
+        dummy = [];
+        dummy = sum(share.(pave_years{i}).(C{j}),1);
+        share_b2017_2pct.(pave_years{i}).(C{j}) = dummy;
+    end
+end
+       
+%% Paved roads traffic class changes after 2017
+clc
+clear all
+
+sec_TG_in = csvread('C:\Users\babake\Documents\MFA\traffic_growth\traffic_growth.csv',1,0);
+
+sec_y = 2017:2050;
+% Convereting integers to an array of strings
+sec_yrs = strtrim(cellstr(num2str(sec_y'))');
+% Add prefix to the created string arrey
+sec_pave_years = strcat('Year_',sec_yrs);
+
+sec_py = sec_TG_in(:,4);
+sec_AC = sec_TG_in(:,2);
+
+% store traffic data from 1980 to 2017 in substrucutre folders
+for i=1
+    n = 0;
+    for j=1:length(sec_TG_in)
+        if sec_py(j) == 2017
+            n = n+1;
+            sec_TG.(sec_pave_years{i})(n,:) = sec_TG_in(j,1:5);
+        end
+    end
+end
+sec_z = zeros(1,201);
+
+[rrr,ccc] = size(sec_TG.(sec_pave_years{i}));
+for n = 1:rrr
+    sec_FT_t = [sec_TG.(sec_pave_years{i})(n,:) sec_z];
+    sec_TG_beta.(sec_pave_years{i})(n,:) = sec_FT_t;
+end
+
+
+%% Traffic growth after 2017 and traffic wont grow 
+sec_TG_beta_base = sec_TG_beta;
+
+for  i = 1
+    [rrr,ccc] = size(sec_TG_beta_base.(sec_pave_years{i}));
+    c_read = 4;
+    c_write = 5;
+    for n =1:rrr
+        for w = 1:ccc
+            tr = sec_TG_beta_base.(sec_pave_years{i})(n,(c_read+w));
+            sec_TG_beta_base.(sec_pave_years{i})(n,(c_write+w)) = tr;
+        end
+    end
+end
+
+%% Traffic growth after 2017 and traffic grows by 1% 
+sec_TG_beta_base = sec_TG_beta;
+
+for  i = 1
+    [rrr,ccc] = size(sec_TG_beta_base.(sec_pave_years{i}));
+    c_read = 4;
+    c_write = 5;
+    for n =1:rrr
+        for w = 1:ccc
+            tr = sec_TG_beta_base.(sec_pave_years{i})(n,(c_read+w));
+            sec_TG_beta_base.(sec_pave_years{i})(n,(c_write+w)) = tr*1.01;
+        end
+    end
+end
+
+%% Traffic growth after 2017 and traffic grows by 2% 
+sec_TG_beta_base = sec_TG_beta;
+
+for  i = 1
+    [rrr,ccc] = size(sec_TG_beta_base.(sec_pave_years{i}));
+    c_read = 4;
+    c_write = 5;
+    for n =1:rrr
+        for w = 1:ccc
+            tr = sec_TG_beta_base.(sec_pave_years{i})(n,(c_read+w));
+            sec_TG_beta_base.(sec_pave_years{i})(n,(c_write+w)) = tr*1.02;
+        end
+    end
+end
+
+
+
+%% calculating the share of changes in traffic classes in different paved years after 2017
+
+% clustring each year into the seven traffic class 
+sec_cl = 1:7;
+sec_cls = strtrim(cellstr(num2str(sec_cl'))');
+sec_C = strcat('C',sec_cls);
+
+for i = 2:length(sec_pave_years)
+    [rrr,ccc] = size(sec_TG_beta_base.(sec_pave_years{1}));
+    AC = sec_TG_beta_base.(sec_pave_years{i})(:,2);
+    tgc = [76 59 46 42 39 40 41];
+    for j = 1:7
+        k = [];
+        a = [];
+        a_300 = [];
+        a_1500 = [];
+        a_3000 = [];
+        a_5000 = [];
+        a_10000 = [];
+        a_20000 = [];
+        a_over_20000 = [];
+        k = sec_TG_beta_base.(sec_pave_years{1})(AC==j,:);
+        [kr,kc] = size(k);
+        for w = 1:kr
+            if k(w,tgc(j))<=300
+                a_300(w,:) = k(w,:);
+            elseif k(w,tgc(j))> 300 && k(w,tgc(j))<=1500
+                a_1500(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 1500 && k(w,tgc(j))<=3000
+                a_3000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 3000 && k(w,tgc(j))<=5000
+                a_5000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 5000 && k(w,tgc(j))<=10000
+                a_10000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 10000 && k(w,tgc(j))<=20000
+                a_20000(w,:)=k(w,:);
+            elseif k(w,tgc(j))> 20000
+                a_over_20000(w,:)=k(w,:);
+            end
+        end
+        if exist('a_300') ~= 1|| isempty(a_300)
+            t_a_300 = 0;
+        else
+            t_a_300 = sum(a_300(:,1))*sum(a_300(:,3));
+        end
+        if exist('a_1500') ~= 1 || isempty(a_1500)
+            t_a_1500 = 0;
+        else
+            t_a_1500 = sum(a_1500(:,1))*sum(a_1500(:,3));
+        end
+        if exist('a_3000') ~= 1 || isempty(a_3000)
+            t_a_3000 = 0;
+        else
+            t_a_3000 = sum(a_3000(:,1))*sum(a_3000(:,3));
+        end
+        if exist('a_5000') ~= 1 || isempty(a_5000)
+            t_a_5000 = 0;
+        else
+            t_a_5000 = sum(a_5000(:,1))*sum(a_5000(:,3));
+        end
+        if exist('a_10000') ~= 1 || isempty(a_10000)
+            t_a_10000 = 0;
+        else
+            t_a_10000 = sum(a_10000(:,1))*sum(a_10000(:,3));
+        end
+        if exist('a_20000') ~= 1 || isempty(a_20000)
+            t_a_20000 = 0;
+        else
+            t_a_20000 = sum(a_20000(:,1))*sum(a_20000(:,3));
+        end
+        if exist('a_over_20000') ~= 1 || isempty(a_over_20000)
+            t_a_over_20000 = 0;
+        else
+            t_a_over_20000 = sum(a_over_20000(:,1))*sum(a_over_20000(:,3));
+        end
+        a = t_a_300+t_a_1500+t_a_3000+t_a_5000+t_a_10000+t_a_20000+t_a_over_20000;
+        if isempty(a)
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = 0;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = 0;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = 0;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = 0;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = 0;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = 0;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = 0;
+        else
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = t_a_300/a;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = t_a_1500/a;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = t_a_3000/a;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = t_a_5000/a;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = t_a_10000/a;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = t_a_20000/a;
+            share.(sec_pave_years{i}).(sec_C{j})(j,:) = t_a_over_20000/a;
+        end
+    end
+end
+
+for i = 2:length(sec_pave_years)
+    for j = 1:7
+        dummy = [];
+        dummy = sum(share.(sec_pave_years{i}).(C{j}),1);
+        share_a2017_base.(sec_pave_years{i}).(C{j}) = dummy;
+    end
+end
