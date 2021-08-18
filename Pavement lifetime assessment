@@ -1,0 +1,41 @@
+library(dplyr)
+library(survival)
+library(ggplot2)
+library(flexsurv)
+library(survminer)
+################# Traffic class 1 #################
+
+dat <- read.csv('./MFA/Levetider.csv', header = TRUE, sep = ",", dec = ".")
+TC1 <- filter(dat, X_T_klass == "1" & between(X_Year,1,51))
+TC1 <- TC1 %>%
+  mutate(zone = ifelse(gridcode == 0 | gridcode == 1, "A" ,
+                ifelse(gridcode == 10, "B" ,
+                ifelse(gridcode == 100 ,"C" , NA ))))
+
+fit_cox_TC1 <- flexsurvreg(Surv(X_Year, X_Event) ~ 1 , data = TC1, dist = "weibull")
+
+ggsurvplot(fit_cox_TC1)
+
+
+sh <- fit_cox_TC1$res[1:1]
+sh_LB <- fit_cox_TC1$res[3:3]
+sh_UB <- fit_cox_TC1$res[5:5]
+sc <- fit_cox_TC1$res[2:2]
+sc_LB <- fit_cox_TC1$res[4:4]
+sc_UB <- fit_cox_TC1$res[6:6]
+#sc_B <- exp(log(fit_cox_TC1$res[2:2])+fit_cox_TC1$res[3:3])
+#sc_B_LB <- exp(log(fit_cox_TC1$res[6:6])+fit_cox_TC1$res[7:7])
+#sc_B_UB <- exp(log(fit_cox_TC1$res[10:10])+fit_cox_TC1$res[11:11])
+#sc_C <- exp(log(fit_cox_TC1$res[2:2])+fit_cox_TC1$res[4:4])
+#sc_C_LB <- exp(log(fit_cox_TC1$res[6:6])+fit_cox_TC1$res[8:8])
+#sc_C_UB <- exp(log(fit_cox_TC1$res[10:10])+fit_cox_TC1$res[12:12])
+
+Wb <- matrix(c(sh, sc),nrow = 2)
+Wb_LB <- matrix(c(sh_LB, sc_LB),nrow = 2)
+Wb_UB <- matrix(c(sh_UB, sc_UB),nrow = 2)
+
+write.csv(Wb, file = "./MFA/WB/TC1_Par_Base.csv")
+write.csv(Wb_LB, file = "./MFA/WB/TC1_Par_LB.csv")
+write.csv(Wb_UB, file = "./MFA/WB/TC1_Par_UB.csv")
+
+write.csv(summary(fit_cox_TC1, type = 'median'), file = "./TC1_median.csv")
