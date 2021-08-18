@@ -1,0 +1,1496 @@
+clc
+clear
+
+% Calaculate the changes in the amount of secondary inputs with respect to changes
+% here we calculate how the share shifts from one traffic class to the
+% other classes from 1980 to 2050
+
+fy = 1980:2050;
+% Convereting integers to an array of strings
+fyrs = strtrim(cellstr(num2str(fy'))');
+% Add prefix to the created string arrey
+fpave_years = strcat('Year_',fyrs);
+% Seven traffic classes
+fcl = 1:7;
+fcls = strtrim(cellstr(num2str(fcl'))');
+fC = strcat('C',fcls);
+
+for i = 1:7
+    aa =[];
+    aa = share_b2017_1pct.(fpave_years{2}).(fC{i});
+    share_b2017_1pct.(fpave_years{1}).(fC{i}) = aa;
+end
+aa = [];
+
+share_b2017_1pct.(fpave_years{3}).(fC{7}) = [0 0 0 0 0 0 0];
+
+for i = 1:7
+    for j = 1:38
+        a.(fC{i})(j,:) = share_b2017_1pct.(fpave_years{j}).(fC{i});
+    end
+    aa.(fC{i})(1,:) = [quantile(a.(fC{i})(:,1),0.25) quantile(a.(fC{i})(:,2),0.25) quantile(a.(fC{i})(:,3),0.25)...
+        quantile(a.(fC{i})(:,4),0.25) quantile(a.(fC{i})(:,5),0.25) quantile(a.(fC{i})(:,6),0.25) quantile(a.(fC{i})(:,6),0.25)];
+    aa.(fC{i})(2,:) = [quantile(a.(fC{i})(:,1),0.75) quantile(a.(fC{i})(:,2),0.75) quantile(a.(fC{i})(:,3),0.85)...
+        quantile(a.(fC{i})(:,4),0.75) quantile(a.(fC{i})(:,5),0.75) quantile(a.(fC{i})(:,6),0.75) quantile(a.(fC{i})(:,7),0.75)];
+end
+
+for j = 1:7
+    for w = 3:71
+        aaa.(fpave_years{w}).(fC{j})(:,1) = mean(aa.(fC{j})(1,1)+rand(1,1000)'.*(aa.(fC{j})(2,1)-aa.(fC{j})(1,1)),1);
+        aaa.(fpave_years{w}).(fC{j})(:,2) = mean(aa.(fC{j})(1,2)+rand(1,1000)'.*(aa.(fC{j})(2,2)-aa.(fC{j})(1,2)),1);
+        aaa.(fpave_years{w}).(fC{j})(:,3) = mean(aa.(fC{j})(1,3)+rand(1,1000)'.*(aa.(fC{j})(2,3)-aa.(fC{j})(1,3)),1);
+        aaa.(fpave_years{w}).(fC{j})(:,4) = mean(aa.(fC{j})(1,4)+rand(1,1000)'.*(aa.(fC{j})(2,4)-aa.(fC{j})(1,4)),1);
+        aaa.(fpave_years{w}).(fC{j})(:,5) = mean(aa.(fC{j})(1,5)+rand(1,1000)'.*(aa.(fC{j})(2,5)-aa.(fC{j})(1,5)),1);
+        aaa.(fpave_years{w}).(fC{j})(:,6) = mean(aa.(fC{j})(1,6)+rand(1,1000)'.*(aa.(fC{j})(2,6)-aa.(fC{j})(1,6)),1);
+        aaa.(fpave_years{w}).(fC{j})(:,7) = mean(aa.(fC{j})(1,7)+rand(1,1000)'.*(aa.(fC{j})(2,7)-aa.(fC{j})(1,7)),1);          
+    end
+end
+
+for j = 1:7
+    for w = 3:71 
+        if j == 1
+            % for Class 1
+            if (aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,2) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,3) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)); 
+                aaa.(fpave_years{w}).(fC{j})(1,4) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,5) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,6) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,7) = dum;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) < 1
+                aaa.(fpave_years{w}).(fC{j})(1,1) = (aaa.(fpave_years{w}).(fC{j})(1,1) + (1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1))));
+            end 
+        elseif j ==2
+            if (aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,3)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,2));
+                aaa.(fpave_years{w}).(fC{j})(1,3) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2));
+                aaa.(fpave_years{w}).(fC{j})(1,1) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)); 
+                aaa.(fpave_years{w}).(fC{j})(1,4) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,5) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,6) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,7) = dum;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) < 1
+                aaa.(fpave_years{w}).(fC{j})(1,2) = (aaa.(fpave_years{w}).(fC{j})(1,2) + (1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1))));
+            end
+        elseif j == 3
+            if (aaa.(fpave_years{w}).(fC{j})(1,4)+aaa.(fpave_years{w}).(fC{j})(1,3)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,3));
+                aaa.(fpave_years{w}).(fC{j})(1,4) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,4)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,3) +aaa.(fpave_years{w}).(fC{j})(1,4));
+                aaa.(fpave_years{w}).(fC{j})(1,2) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,5)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)); 
+                aaa.(fpave_years{w}).(fC{j})(1,5) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2));
+                aaa.(fpave_years{w}).(fC{j})(1,1) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum =  1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,6) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,7) = dum;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) < 1
+                aaa.(fpave_years{w}).(fC{j})(1,3) = (aaa.(fpave_years{w}).(fC{j})(1,3) + (1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1))));
+            end
+        elseif j == 4
+            if (aaa.(fpave_years{w}).(fC{j})(1,5)+aaa.(fpave_years{w}).(fC{j})(1,4)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,4));
+                aaa.(fpave_years{w}).(fC{j})(1,5) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,5)+aaa.(fpave_years{w}).(fC{j})(1,4)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5)+aaa.(fpave_years{w}).(fC{j})(1,4));
+                aaa.(fpave_years{w}).(fC{j})(1,3) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,6) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,6)+aaa.(fpave_years{w}).(fC{j})(1,5)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,5)); 
+                aaa.(fpave_years{w}).(fC{j})(1,6) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) +aaa.(fpave_years{w}).(fC{j})(1,6));
+                aaa.(fpave_years{w}).(fC{j})(1,2) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,7)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2));
+                aaa.(fpave_years{w}).(fC{j})(1,7) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1));
+                aaa.(fpave_years{w}).(fC{j})(1,1) = dum;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) < 1
+                aaa.(fpave_years{w}).(fC{j})(1,4) = (aaa.(fpave_years{w}).(fC{j})(1,4) + (1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1))));
+            end
+        elseif j == 5
+            if (aaa.(fpave_years{w}).(fC{j})(1,5)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum =1-(aaa.(fpave_years{w}).(fC{j})(1,5));
+                aaa.(fpave_years{w}).(fC{j})(1,6) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5)+aaa.(fpave_years{w}).(fC{j})(1,4)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5));
+                aaa.(fpave_years{w}).(fC{j})(1,4) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,7) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6)+aaa.(fpave_years{w}).(fC{j})(1,5)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,6)+aaa.(fpave_years{w}).(fC{j})(1,5)); 
+                aaa.(fpave_years{w}).(fC{j})(1,7) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6));
+                aaa.(fpave_years{w}).(fC{j})(1,3) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,7)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,7));
+                aaa.(fpave_years{w}).(fC{j})(1,2) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2));
+                aaa.(fpave_years{w}).(fC{j})(1,1) = dum;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) < 1
+                aaa.(fpave_years{w}).(fC{j})(1,5) = aaa.(fpave_years{w}).(fC{j})(1,5) + (1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)));
+            end
+        elseif j == 6
+            if (aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1- (aaa.(fpave_years{w}).(fC{j})(1,6));
+                aaa.(fpave_years{w}).(fC{j})(1,7) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,5)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1 - (aaa.(fpave_years{w}).(fC{j})(1,7) +aaa.(fpave_years{w}).(fC{j})(1,6));
+                aaa.(fpave_years{w}).(fC{j})(1,5) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,6)+aaa.(fpave_years{w}).(fC{j})(1,7)) > 1
+                dum = 1- ( aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,6)+aaa.(fpave_years{w}).(fC{j})(1,7)); 
+                aaa.(fpave_years{w}).(fC{j})(1,4) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6));
+                aaa.(fpave_years{w}).(fC{j})(1,3) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,7)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,7));
+                aaa.(fpave_years{w}).(fC{j})(1,2) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2));
+                aaa.(fpave_years{w}).(fC{j})(1,1) = dum;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) < 1
+                aaa.(fpave_years{w}).(fC{j})(1,6) = (aaa.(fpave_years{w}).(fC{j})(1,6) + (1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1))));
+            end
+       elseif j == 7
+            if (aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,7));
+                aaa.(fpave_years{w}).(fC{j})(1,6) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,5) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,5)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,7) +aaa.(fpave_years{w}).(fC{j})(1,6));
+                aaa.(fpave_years{w}).(fC{j})(1,5) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,4) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,6)+aaa.(fpave_years{w}).(fC{j})(1,7)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,6)+aaa.(fpave_years{w}).(fC{j})(1,7)); 
+                aaa.(fpave_years{w}).(fC{j})(1,4) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,3) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,7)+aaa.(fpave_years{w}).(fC{j})(1,6));
+                aaa.(fpave_years{w}).(fC{j})(1,3) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+                aaa.(fpave_years{w}).(fC{j})(1,2) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,7)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) +aaa.(fpave_years{w}).(fC{j})(1,7));
+                aaa.(fpave_years{w}).(fC{j})(1,2) = dum;
+                aaa.(fpave_years{w}).(fC{j})(1,1) = 0;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) > 1
+                dum = 1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2));
+                aaa.(fpave_years{w}).(fC{j})(1,1) = dum;
+            elseif (aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1)) < 1
+                aaa.(fpave_years{w}).(fC{j})(1,7) = (aaa.(fpave_years{w}).(fC{j})(1,7) + (1-(aaa.(fpave_years{w}).(fC{j})(1,7) + aaa.(fpave_years{w}).(fC{j})(1,6) + aaa.(fpave_years{w}).(fC{j})(1,5) + aaa.(fpave_years{w}).(fC{j})(1,4) + aaa.(fpave_years{w}).(fC{j})(1,3) + aaa.(fpave_years{w}).(fC{j})(1,2)+aaa.(fpave_years{w}).(fC{j})(1,1))));
+            end
+            
+        end
+    end
+end
+
+% randomized traffic class changes
+
+RT = aaa; 
+
+
+% Inserting the parameters for Weibull disiributions in different traffic classes
+WB_TC1_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC1_Par_Base.csv',1,1);
+WB_TC2_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC2_Par_Base.csv',1,1);
+WB_TC3_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC3_Par_Base.csv',1,1);
+WB_TC4_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC4_Par_Base.csv',1,1);
+WB_TC5_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC5_Par_Base.csv',1,1);
+WB_TC6_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC6_Par_Base.csv',1,1);
+WB_TC7_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC7_Par_Base.csv',1,1);
+
+% Duration of analysis
+x = 0:70;
+% Shape parameter
+sh(1,1) = WB_TC1_Base(2);
+sh(1,2) = WB_TC2_Base(2);
+sh(1,3) = WB_TC3_Base(2);
+sh(1,4) = WB_TC4_Base(2);
+sh(1,5) = WB_TC5_Base(2);
+sh(1,6) = WB_TC6_Base(2);
+sh(1,7) = WB_TC7_Base(2);
+% Scale parameter
+sc(1,1) = WB_TC1_Base(1);
+sc(1,2) = WB_TC2_Base(1);
+sc(1,3) = WB_TC3_Base(1);
+sc(1,4) = WB_TC4_Base(1);
+sc(1,5) = WB_TC5_Base(1);
+sc(1,6) = WB_TC6_Base(1);
+sc(1,7) = WB_TC7_Base(1);
+
+% surface inputs to each traffic class 
+% Import paving history for roads that are still in-service (Tildato = 9999)
+in_99 = csvread('C:\Users\babake\Documents\MFA\paving\paving_history_99.csv',1,0);
+% Paving year
+py_99 = in_99(:,3);
+% Store the info with respect to the paving year
+for i=1:38
+    n = 0;
+    for j=1:length(in_99)
+        if fy(i) == py_99(j)
+            n = n+1;
+            Hin_99.(fpave_years{i}) (n,:) = in_99(j,:);
+        end
+    end
+end
+
+% Calculating volume for paved roads that are still in-service (Tildato = 9999)
+for i = 1:38
+    AC_99 = [];
+    AC_99 = Hin_99.(fpave_years{i})(:,5);
+    for j = 1:7
+        k = [];
+        a = [];
+        k = Hin_99.(fpave_years{i})(AC_99==j,:);
+        [kr,kc] = size(k);
+        a = zeros(kr:1);
+        for w = 1:kr
+            a(w,:) = sum(k(w,1))*sum(k(w,6))*sum(k(w,2)/1000);
+        end
+        if exist('a') ~= 1|| isempty(a)
+            V_Hin_99.(fpave_years{i}).(fC{j})(1,1) = 0;
+        else
+            V_Hin_99.(fpave_years{i}).(fC{j})(1,1) = sum(a);
+        end
+    end
+end
+% Calculating surface area for paved roads that are still in-service (Tildato = 9999)
+for i = 1:38
+    AC_99 = [];
+    AC_99 = Hin_99.(fpave_years{i})(:,5);
+    for j = 1:7
+        k = [];
+        a = [];
+        k = Hin_99.(fpave_years{i})(AC_99==j,:);
+        [kr,kc] = size(k);
+        a = zeros(kr:1);
+        for w = 1:kr
+            a(w,:) = sum(k(w,1))*sum(k(w,6));
+        end
+        if exist('a') ~= 1|| isempty(a)
+            A_Hin_99.(fpave_years{i}).(fC{j})(1,1) = 0;
+        else
+            A_Hin_99.(fpave_years{i}).(fC{j})(1,1) = sum(a);
+        end
+    end
+end
+
+% Modifing the surface area needed to be maintained by including  the outputs base
+
+% share_b2017_base.(fpave_years{3}).(fC{7}) = [0 0 0 0 0 0 0];
+% 
+% for i = 1:38
+%     a = [];
+%     aa = [];
+%     % calculate surface share
+%     if i == 1
+%         a(1,:) = A_Hin_99.(fpave_years{i}).(fC{1})*share_b2017_base.(fpave_years{2}).(fC{1});
+%         a(2,:) = A_Hin_99.(fpave_years{i}).(fC{2})*share_b2017_base.(fpave_years{2}).(fC{2});
+%         a(3,:) = A_Hin_99.(fpave_years{i}).(fC{3})*share_b2017_base.(fpave_years{2}).(fC{3});
+%         a(4,:) = A_Hin_99.(fpave_years{i}).(fC{4})*share_b2017_base.(fpave_years{2}).(fC{4});
+%         a(5,:) = A_Hin_99.(fpave_years{i}).(fC{5})*share_b2017_base.(fpave_years{2}).(fC{5});
+%         a(6,:) = A_Hin_99.(fpave_years{i}).(fC{6})*share_b2017_base.(fpave_years{2}).(fC{6});
+%         a(7,:) = A_Hin_99.(fpave_years{i}).(fC{7})*share_b2017_base.(fpave_years{2}).(fC{7});
+%     else
+%         a(1,:) = A_Hin_99.(fpave_years{i}).(fC{1})*share_b2017_base.(fpave_years{i}).(fC{1});
+%         a(2,:) = A_Hin_99.(fpave_years{i}).(fC{2})*share_b2017_base.(fpave_years{i}).(fC{2});
+%         a(3,:) = A_Hin_99.(fpave_years{i}).(fC{3})*share_b2017_base.(fpave_years{i}).(fC{3});
+%         a(4,:) = A_Hin_99.(fpave_years{i}).(fC{4})*share_b2017_base.(fpave_years{i}).(fC{4});
+%         a(5,:) = A_Hin_99.(fpave_years{i}).(fC{5})*share_b2017_base.(fpave_years{i}).(fC{5});
+%         a(6,:) = A_Hin_99.(fpave_years{i}).(fC{6})*share_b2017_base.(fpave_years{i}).(fC{6});
+%         a(7,:) = A_Hin_99.(fpave_years{i}).(fC{7})*share_b2017_base.(fpave_years{i}).(fC{7});
+%     end
+%     aa = sum(a,1);
+%     
+%     for j = 1:7
+%         m_A_Hin_99_base.(fpave_years{i}).(fC{j})(1,:) = aa(1,j);
+%     end
+% end
+
+% Assessing the distribution of lifetime for the initial outputs for each year
+
+for i = 1:38
+    for j = 1:7
+        Out_vecP = A_Hin_99.(fpave_years{i}).(fC{j})*wblpdf(x-1,sh(1,j),sc(1,j));
+        Ini_outP.(fpave_years{i}).(fC{j})(1,:) = [zeros(1,i) Out_vecP(1,2:length(fy)-i+1)];
+        Out_vecC = A_Hin_99.(fpave_years{i}).(fC{j})*wblcdf(x-1,sh(1,j),sc(1,j));
+        Ini_outC.(fpave_years{i}).(fC{j})(1,:) = [zeros(1,i) Out_vecC(1,2:length(fy)-i+1)];
+    end
+end
+
+%% Maintenance activities do not consider changes in traffic over the lifetimes
+
+
+for i=1:38
+    for j = 1:7
+        % following maintenace activities after the first maintenance 
+        for e = i+1:70
+            if e > 1
+                vecP = [];
+                vecC = [];
+                vecP = ((Ini_outC.(fpave_years{i}).(fC{j})(1,e)-Ini_outC.(fpave_years{i}).(fC{j})(1,e-1)))*wblpdf(x-(e),sh(1,j),sc(1,j));
+                vecC = ((Ini_outC.(fpave_years{i}).(fC{j})(1,e)-Ini_outC.(fpave_years{i}).(fC{j})(1,e-1)))*wblcdf(x-(e),sh(1,j),sc(1,j));
+                dum_pdf.(fpave_years{i}).(fC{j})(e,:) = vecP;
+                dum_cdf.(fpave_years{i}).(fC{j})(e,:) = vecC;
+            else
+                vecP = [];
+                vecC = [];
+                vecP = (Ini_outC.(fpave_years{i}).(fC{j})(1,e))*wblpdf(x-(e),sh(1,j),sc(1,j));
+                vecC = (Ini_outC.(fpave_years{i}).(fC{j})(1,e))*wblcdf(x-(e),sh(1,j),sc(1,j));
+                dum_pdf.(fpave_years{i}).(fC{j})(e,:) = vecP;
+                dum_cdf.(fpave_years{i}).(fC{j})(e,:) = vecC;
+            end
+        end
+        pdf.(fpave_years{i}).(fpave_years{i+2}).(fC{j}) = sum(dum_pdf.(fpave_years{i}).(fC{j}),1);
+        cdf.(fpave_years{i}).(fpave_years{i+2}).(fC{j}) = sum(dum_cdf.(fpave_years{i}).(fC{j}),1);
+
+        for w = 2+i:70
+            for z = 1:70
+                if z > 1
+                    vecP = [];
+                    vecC = [];
+                    vecP = (cdf.(fpave_years{i}).(fpave_years{w}).(fC{j})(1,z)-cdf.(fpave_years{i}).(fpave_years{w}).(fC{j})(1,z-1))*wblpdf(x-(z),sh(1,j),sc(1,j));
+                    vecC = (cdf.(fpave_years{i}).(fpave_years{w}).(fC{j})(1,z)-cdf.(fpave_years{i}).(fpave_years{w}).(fC{j})(1,z-1))*wblcdf(x-(z),sh(1,j),sc(1,j));
+                    dum_pdf.(fpave_years{i}).(fC{j})(z,:) = vecP;
+                    dum_cdf.(fpave_years{i}).(fC{j})(z,:) = vecC;
+                else
+                    vecP = [];
+                    vecC = [];
+                    vecP = (cdf.(fpave_years{i}).(fpave_years{w}).(fC{j})(1,z))*wblpdf(x-(z),sh(1,j),sc(1,j));
+                    vecC = (cdf.(fpave_years{i}).(fpave_years{w}).(fC{j})(1,z))*wblcdf(x-(z),sh(1,j),sc(1,j));
+                    dum_pdf.(fpave_years{i}).(fC{j})(z,:) = vecP;
+                    dum_cdf.(fpave_years{i}).(fC{j})(z,:) = vecC;
+                end
+                pdf.(fpave_years{i}).(fpave_years{w+1}).(fC{j}) = sum(dum_pdf.(fpave_years{i}).(fC{j}),1);
+                cdf.(fpave_years{i}).(fpave_years{w+1}).(fC{j}) = sum(dum_cdf.(fpave_years{i}).(fC{j}),1);
+            end          
+        end
+    end
+end
+
+%%  Maintenance activities consider changes in traffic over the lifetimes (Base scenario)
+
+for i=1:38
+    a = [];
+    aa = [];
+    aaa = [];
+    aa22 = [];
+    for oo = 1:7
+        a.(fC{oo}) = (share_b2017_1pct.(fpave_years{i}).(fC{oo})').*(Ini_outC.(fpave_years{i}).(fC{oo}));
+        INI_outC.(fpave_years{i}) = a;
+        aa22.(fC{oo}) = (share_b2017_1pct.(fpave_years{i}).(fC{oo})').*(Ini_outP.(fpave_years{i}).(fC{oo}));
+        INI_outP.(fpave_years{i}) = aa22;
+    end
+    for oo = 1:7
+        for jj = 1:7
+            aa.(fC{oo})(jj,:) = a.(fC{jj})(oo,:);
+        end
+        aaa.(fC{oo}) = sum(aa.(fC{oo}));
+    end
+
+    for j = 1:7
+        % following maintenace activities after the first maintenance 
+        for e = i+1:70
+            if e > 1
+                vecP = [];
+                vecC = [];
+                vecP = (aaa.(fC{j})(1,e) - aaa.(fC{j})(1,e-1))*wblpdf(x-(e),sh(1,j),sc(1,j));
+                vecC = (aaa.(fC{j})(1,e) - aaa.(fC{j})(1,e-1))*wblcdf(x-(e),sh(1,j),sc(1,j));
+                dum_pdf.(fpave_years{i}).(fC{j})(e,:) = vecP;
+                dum_cdf.(fpave_years{i}).(fC{j})(e,:) = vecC;
+            else
+                vecP = [];
+                vecC = [];
+                vecP = (aaa.(fC{j})(1,e))*wblpdf(x-(e),sh(1,j),sc(1,j));
+                vecC = (aaa.(fC{j})(1,e))*wblcdf(x-(e),sh(1,j),sc(1,j));
+                dum_pdf.(fpave_years{i}).(fC{j})(e,:) = vecP;
+                dum_cdf.(fpave_years{i}).(fC{j})(e,:) = vecC;
+            end
+        end
+        pdf.(fpave_years{i}).(fpave_years{i+2}).(fC{j}) = sum(dum_pdf.(fpave_years{i}).(fC{j}),1);
+        cdf.(fpave_years{i}).(fpave_years{i+2}).(fC{j}) = sum(dum_cdf.(fpave_years{i}).(fC{j}),1);
+    end
+    b = [];
+    bb = [];
+    bbb = [];
+    for oo = 1:7
+        a.(fC{oo}) = (RT.(fpave_years{i+2}).(fC{oo})').*(cdf.(fpave_years{i}).(fpave_years{i+2}).(fC{oo}));
+    end
+    for oo = 1:7
+        for jj = 1:7
+            aa.(fC{oo})(jj,:) = a.(fC{jj})(oo,:);
+        end
+        aaa.(fC{oo}) = sum(aa.(fC{oo}));
+    end
+    for w = 2+i:70
+        for j = 1:7    
+            for z = 1:70
+                if z > 1
+                    vecP = [];
+                    vecC = [];
+                    vecP = (aaa.(fC{j})(1,z)-aaa.(fC{j})(1,z-1))*wblpdf(x-(z),sh(1,j),sc(1,j));
+                    vecC = (aaa.(fC{j})(1,z)-aaa.(fC{j})(1,z-1))*wblcdf(x-(z),sh(1,j),sc(1,j));
+                    dum_pdf.(fpave_years{i}).(fC{j})(z,:) = vecP;
+                    dum_cdf.(fpave_years{i}).(fC{j})(z,:) = vecC;
+                else
+                    vecP = [];
+                    vecC = [];
+                    vecP = (aaa.(fC{j})(1,z))*wblpdf(x-(z),sh(1,j),sc(1,j));
+                    vecC = (aaa.(fC{j})(1,z))*wblcdf(x-(z),sh(1,j),sc(1,j));
+                    dum_pdf.(fpave_years{i}).(fC{j})(z,:) = vecP;
+                    dum_cdf.(fpave_years{i}).(fC{j})(z,:) = vecC;
+                end
+                pdf.(fpave_years{i}).(fpave_years{w+1}).(fC{j}) = sum(dum_pdf.(fpave_years{i}).(fC{j}),1);
+                cdf.(fpave_years{i}).(fpave_years{w+1}).(fC{j}) = sum(dum_cdf.(fpave_years{i}).(fC{j}),1);
+            end          
+        end
+        b = [];
+        bb = [];
+        bbb = [];
+        for oo = 1:7
+            a.(fC{oo}) = (RT.(fpave_years{w+1}).(fC{oo})').*(cdf.(fpave_years{i}).(fpave_years{w+1}).(fC{oo}));
+        end
+        for oo = 1:7
+            for jj = 1:7
+                aa.(fC{oo})(jj,:) = a.(fC{jj})(oo,:);
+            end
+            aaa.(fC{oo}) = sum(aa.(fC{oo}));
+        end
+    end
+end
+
+
+%% Caclulating the amount of area for maintenacne activities
+
+% Cummulative pavement area
+for i =1:2
+   for j = 1:7
+      P_A_cdf.(fpave_years{i}).(fC{j}) = INI_outC_clust.(fpave_years{i}).(fC{j});
+   end
+end
+
+for i =3:38
+   for j = 1:7
+      P_A_cdf.(fpave_years{i}).(fC{j}) = sum([INI_outC_clust.(fpave_years{i}).(fC{j}) ; plot_1_cdf.(fpave_years{i}).(fC{j})],1); 
+   end
+end
+
+for i =39:71
+   for j = 1:7
+      P_A_cdf.(fpave_years{i}).(fC{j}) = plot_1_cdf.(fpave_years{i}).(fC{j}); 
+   end
+end
+
+for i = 1:7
+    a=zeros(71,71);
+    for j = 1:71
+        a(j,:) = P_A_cdf.(fpave_years{j}).(fC{i});
+        PA_C_cdf.(fC{i}) = sum(a,1);
+    end
+end
+
+%% Calculation of milling pavement
+
+% milling depth
+mil_d = [65.377349397590365, 61.745446290279361;...
+    54.080281246720538,	44.206407969279937;...
+    45.577406368183482,	36.890103198083821;...
+    34.058181408957914,	17.336761519024748;...
+    32.670845653459494,	13.774765173755954;...
+    34.163814301170454,	11.369662879009834;...
+    44.434503127171645,	26.091817812642436];
+
+% milling percentage
+mil_p = [0.018253079, 0.029447647;...
+    0.022298998,0.033540982;...
+    0.02489021,0.038803076;...
+    0.035281146,0.053427094;...
+    0.057837192,0.070798422;...
+    0.099996737,0.121603875;...
+    0.121041995,0.146954005];
+
+for i = 1:71
+    for j = 1:7
+        for w = 1:100
+            mu_d = log(mil_d(j,1).^2 ./ sqrt(mil_d(j,2) + mil_d(j,1).^2));
+            sigma_d = sqrt(log(1+mil_d(j,2) ./ mil_d(j,1).^2));
+            md_d.(fpave_years{i}).(fC{j})(:,w)=lognrnd(mu_d,sigma_d);
+            
+            mu_p = log(mil_p(j,1).^2 ./ sqrt(mil_p(j,2) + mil_p(j,1).^2));
+            sigma_p = sqrt(log(1+mil_p(j,2) ./ mil_p(j,1).^2));
+            mp_p.(fpave_years{i}).(fC{j})(:,w)=lognrnd(mu_p,sigma_p);
+        end        
+    end
+end
+% 
+for i = 1:7
+    for j = 1:71
+        if j > 1
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j) - PA_C_cdf.(fC{i})(:,j-1);
+        else
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j);
+        end
+    end
+end
+
+% Material density of milled area
+for i = 1:7
+    for w = 1:100
+        A1 = 2000;
+        A2 = 2400;
+        Mmd = A1+rand(1,100)*(A2-A1);
+        Mpmds.(fC{i}) = Mmd;
+    end
+end
+% Calculation of volume and mass of milled area 
+
+for i = 1:7
+    for j = 1:71
+       % milled volume
+       Milling_V.(fC{i}) = (m_PA_C_cdf.(fC{i})').*(mp_p.(fpave_years{j}).(fC{i}).*md_d.(fpave_years{j}).(fC{i}));
+       
+       % milled amount
+       Milling_kg.(fC{i}) = Mpmds.(fC{i}).*Milling_V.(fC{i});
+
+    end
+end
+
+%% Calculation of paving for binding layer
+
+% binding layer depth
+bin_d = [41.319662706017631,27.555600522064257
+    33.911580436540014,21.589532097715299;...
+    31.142962236390389,21.355366124162821;...
+    32.143365424863958,18.671228616169191;...
+    31.258337038683859,20.80994940644149;...
+    40.225861480723303,28.836567132602532;...
+    45.272388059701491,31.804417619150122];
+
+% binding layer percentage
+bin_p = [0.035979361,0.061639017;...
+    0.053692383,0.086808398;...
+    0.076532128,0.113938019;...
+    0.074369256,0.103079026;...
+    0.056563405,0.069542535;...
+    0.059026869,0.090809808;...
+    0.076180653,0.124582848];
+
+for i = 1:71
+    for j = 1:7
+        for w = 1:100
+            bmu_d = log(bin_d(j,1).^2 ./ sqrt(bin_d(j,2) + bin_d(j,1).^2));
+            bsigma_d = sqrt(log(1+bin_d(j,2) ./ bin_d(j,1).^2));
+            bmd_d.(fpave_years{i}).(fC{j})(:,w)=lognrnd(bmu_d,bsigma_d);
+            
+            bmu_p = log(bin_p(j,1).^2 ./ sqrt(bin_p(j,2) + bin_p(j,1).^2));
+            bsigma_p = sqrt(log(1+bin_p(j,2) ./ bin_p(j,1).^2));
+            bmp_p.(fpave_years{i}).(fC{j})(:,w)=lognrnd(bmu_p,bsigma_p);
+        end        
+    end
+end
+
+% 
+for i = 1:7
+    for j = 1:71
+        if j > 1
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j) - PA_C_cdf.(fC{i})(:,j-1);
+        else
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j);
+        end
+    end
+end
+
+% Material density of milled area
+for i = 1:7
+    for w = 1:100
+        A1 = 2000;
+        A2 = 2400;
+        Bmd = A1+rand(1,100)*(A2-A1);
+        Bpmds.(fC{i}) = Bmd;
+    end
+end
+% Calculation of volume and mass of milled area 
+
+for i = 1:7
+    for j = 1:71
+       % milled volume
+       Binder_V.(fC{i}) = (m_PA_C_cdf.(fC{i})').*(bmp_p.(fpave_years{j}).(fC{i}).*bmd_d.(fpave_years{j}).(fC{i}));
+       
+       % milled amount
+       Binder_kg.(fC{i}) = Bpmds.(fC{i}).*Binder_V.(fC{i});
+
+    end
+end
+
+%% Calculation of paving for wearing layer
+
+% binding layer depth
+wearing_d = [33.621620288949885,14.121071958329955;...
+    35.315810909499469,11.560153272376256;...
+    35.521011596832324,10.35544095131643;...
+    35.37935661903682,9.3184159220471372;...
+    35.832683787027847,8.6804028936521931;...
+    36.315410726408693,11.260249760905896;...
+    35.526592153626886,13.456850334916769];
+
+for i = 1:71
+    for j = 1:7
+        for w = 1:100
+            wmu_d = log(bin_d(j,1).^2 ./ sqrt(bin_d(j,2) + bin_d(j,1).^2));
+            wsigma_d = sqrt(log(1+bin_d(j,2) ./ bin_d(j,1).^2));
+            wmd_d.(fpave_years{i}).(fC{j})(:,w)=lognrnd(wmu_d,wsigma_d);         
+        end        
+    end
+end
+
+% 
+for i = 1:7
+    for j = 1:71
+        if j > 1
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j) - PA_C_cdf.(fC{i})(:,j-1);
+        else
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j);
+        end
+    end
+end
+
+% Material density of milled area
+for i = 1:7
+    for w = 1:100
+        A1 = 2000;
+        A2 = 2400;
+        Wmd = A1+rand(1,100)*(A2-A1);
+        Wpmds.(fC{i}) = Wmd;
+    end
+end
+% Calculation of volume and mass of milled area 
+
+for i = 1:7
+    for j = 1:71
+       % milled volume
+       Wearing_V.(fC{i}) = (m_PA_C_cdf.(fC{i})').*(wmd_d.(fpave_years{j}).(fC{i}));
+       
+       % milled amount
+       Wearing_kg.(fC{i}) = Bpmds.(fC{i}).*Wearing_V.(fC{i});
+
+    end
+end
+
+%% registered milling activities
+clc
+clear
+rma = csvread('...\fresing_width_elev_modi.csv',1,0);
+
+mil_date = rma(:,5);
+
+y = 1980:2050;
+yrs = strtrim(cellstr(num2str(y'))');
+in_years = strcat('Year_',yrs);
+
+for i = 1:length(in_years)
+    if y(i)== 1980
+        sps.(in_years{i}) = rma(mil_date<=y(i),:);
+    else
+        sps.(in_years{i}) = rma(mil_date==y(i),:);
+    end
+end
+
+T1 = prctile(rma(:,3),24);
+T2 = prctile(rma(:,3),90);
+
+rma(isnan(rma))=0;
+
+Thic = [];
+wid = [];
+for i = 1:38
+    [rr,cc] = size(sps.(in_years{i}));
+    for j = 1:rr 
+        if sps.(in_years{i})(j,3) == 0 || sps.(in_years{i})(j,3) > 200
+            Thic.(in_years{i})(j,:) = T1+rand(1,1)*(T2-T1);
+        else
+            Thic.(in_years{i})(j,:) = sps.(in_years{i})(j,3);
+        end
+        
+        if sps.(in_years{i})(j,4) > 90 || sps.(in_years{i})(j,4) == 0
+            wid.(in_years{i})(j,:) = sps.(in_years{i})(j,6);
+        else
+            wid.(in_years{i})(j,:) = sps.(in_years{i})(j,4);
+        end
+        A1=2000;
+        A2=2400;
+        mil_md.(in_years{i})(j,:) = A1+rand(1,100)*(A2-A1);       
+    end
+end
+
+%%
+
+for i = 1:8
+    mil_md.(in_years{i}) = zeros(1,100);
+    Thic.(in_years{i}) = zeros(1,100);
+    wid.(in_years{i}) = zeros(1,100);
+end
+
+for i = 1:38
+    [rr,cc] = size(sps.(in_years{i}));
+    for j = 1:rr
+        milling_rec_mass.(in_years{i})(j,:) = mil_md.(in_years{i})(j,:).*Thic.(in_years{i})(j,:).*wid.(in_years{i})(j,:).*sps.(in_years{i})(j,14);
+    end
+end
+
+%%
+for i = 9:38
+     MMiing_rec(i,:) = sum(milling_rec_mass.(in_years{i}),1)/1000;
+end
+
+for i = 1:8
+    MMiing_rec(i,:) = zeros(1,100);
+end
+
+% for i = 1:38 
+%     for w = 1:100
+%         A1 = 2000;
+%         A2 = 2400;
+%         Wmd = A1+rand(1,100)*(A2-A1);
+%         Wpmds.(fC{i}) = Wmd;
+%     end
+% end
+
+%% Calculation of milling pavement _ Scenario 2
+
+% milling depth
+mil_d = [65.377349397590365, 61.745446290279361;...
+    54.080281246720538,	44.206407969279937;...
+    45.577406368183482,	36.890103198083821;...
+    34.058181408957914,	17.336761519024748;...
+    32.670845653459494,	13.774765173755954;...
+    34.163814301170454,	11.369662879009834;...
+    44.434503127171645,	26.091817812642436];
+
+% milling percentage
+mil_p = [0.018253079, 0.029447647;...
+    0.022298998,0.033540982;...
+    0.02489021,0.038803076;...
+    0.035281146,0.053427094;...
+    0.057837192,0.070798422;...
+    0.099996737,0.121603875;...
+    0.121041995,0.146954005];
+
+for i = 1:71
+    for j = 1:7
+        for w = 1:100
+            mu_d = log(mil_d(j,1).^2 ./ sqrt(mil_d(j,2) + mil_d(j,1).^2));
+            sigma_d = sqrt(log(1+mil_d(j,2) ./ mil_d(j,1).^2));
+            md_d.(fpave_years{i}).(fC{j})(:,w)=lognrnd(mu_d,sigma_d);
+            
+            mu_p = log(mil_p(j,1).^2 ./ sqrt(mil_p(j,2) + mil_p(j,1).^2));
+            sigma_p = sqrt(log(1+mil_p(j,2) ./ mil_p(j,1).^2));
+            mp_p.(fpave_years{i}).(fC{j})(:,w)=lognrnd(mu_p,sigma_p);
+        end        
+    end
+end
+% 
+for i = 1:7
+    for j = 1:71
+        if j > 1
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j) - PA_C_cdf.(fC{i})(:,j-1);
+        else
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j);
+        end
+    end
+end
+
+% Material density of milled area
+for i = 1:7
+    for w = 1:100
+        A1 = 2000;
+        A2 = 2400;
+        Mmd = A1+rand(1,100)*(A2-A1);
+        Mpmds.(fC{i}) = Mmd;
+    end
+end
+% Calculation of volume and mass of milled area 
+
+for i = 1:7
+    for j = 1:71
+       % milled volume
+       Milling_V_2prc.(fC{i}) = (m_PA_C_cdf.(fC{i})').*(mp_p.(fpave_years{j}).(fC{i}).*md_d.(fpave_years{j}).(fC{i}));
+       
+       % milled amount
+       Milling_kg_2prc.(fC{i}) = Mpmds.(fC{i}).*Milling_V_2prc.(fC{i});
+
+    end
+end
+
+%% Calculation of paving for binding layer
+
+% binding layer depth
+bin_d = [41.319662706017631,27.555600522064257
+    33.911580436540014,21.589532097715299;...
+    31.142962236390389,21.355366124162821;...
+    32.143365424863958,18.671228616169191;...
+    31.258337038683859,20.80994940644149;...
+    40.225861480723303,28.836567132602532;...
+    45.272388059701491,31.804417619150122];
+
+% binding layer percentage
+bin_p = [0.035979361,0.061639017;...
+    0.053692383,0.086808398;...
+    0.076532128,0.113938019;...
+    0.074369256,0.103079026;...
+    0.056563405,0.069542535;...
+    0.059026869,0.090809808;...
+    0.076180653,0.124582848];
+
+for i = 1:71
+    for j = 1:7
+        for w = 1:100
+            bmu_d= log(bin_d(j,1).^2 ./ sqrt(bin_d(j,2) + bin_d(j,1).^2));
+            bsigma_d = sqrt(log(1+bin_d(j,2) ./ bin_d(j,1).^2));
+            bmd_d.(fpave_years{i}).(fC{j})(:,w)=lognrnd(bmu_d,bsigma_d);
+            
+            bmu_p = log(bin_p(j,1).^2 ./ sqrt(bin_p(j,2) + bin_p(j,1).^2));
+            bsigma_p = sqrt(log(1+bin_p(j,2) ./ bin_p(j,1).^2));
+            bmp_p.(fpave_years{i}).(fC{j})(:,w)=lognrnd(bmu_p,bsigma_p);
+        end        
+    end
+end
+
+% 
+for i = 1:7
+    for j = 1:71
+        if j > 1
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j) - PA_C_cdf.(fC{i})(:,j-1);
+        else
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j);
+        end
+    end
+end
+
+% Material density of milled area
+for i = 1:7
+    for w = 1:100
+        A1 = 2000;
+        A2 = 2400;
+        Bmd = A1+rand(1,100)*(A2-A1);
+        Bpmds.(fC{i}) = Bmd;
+    end
+end
+% Calculation of volume and mass of milled area 
+
+for i = 1:7
+    for j = 1:71
+       % milled volume
+       Binder_V_2prc.(fC{i}) = (m_PA_C_cdf.(fC{i})').*(bmp_p.(fpave_years{j}).(fC{i}).*bmd_d.(fpave_years{j}).(fC{i}));
+       
+       % milled amount
+       Binder_kg_2prc.(fC{i}) = Bpmds.(fC{i}).*Binder_V_2prc.(fC{i});
+
+    end
+end
+
+%% Calculation of paving for wearing layer
+
+% binding layer depth
+wearing_d = [33.621620288949885,14.121071958329955;...
+    35.315810909499469,11.560153272376256;...
+    35.521011596832324,10.35544095131643;...
+    35.37935661903682,9.3184159220471372;...
+    35.832683787027847,8.6804028936521931;...
+    36.315410726408693,11.260249760905896;...
+    35.526592153626886,13.456850334916769];
+
+for i = 1:71
+    for j = 1:7
+        for w = 1:100
+            wmu_d = log(bin_d(j,1).^2 ./ sqrt(bin_d(j,2) + bin_d(j,1).^2));
+            wsigma_d = sqrt(log(1+bin_d(j,2) ./ bin_d(j,1).^2));
+            wmd_d.(fpave_years{i}).(fC{j})(:,w)=lognrnd(wmu_d,wsigma_d);         
+        end        
+    end
+end
+
+% 
+for i = 1:7
+    for j = 1:71
+        if j > 1
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j) - PA_C_cdf.(fC{i})(:,j-1);
+        else
+            m_PA_C_cdf.(fC{i}) (:,j) = PA_C_cdf.(fC{i})(:,j);
+        end
+    end
+end
+
+% Material density of milled area
+for i = 1:7
+    for w = 1:100
+        A1 = 2000;
+        A2 = 2400;
+        Wmd = A1+rand(1,100)*(A2-A1);
+        Wpmds.(fC{i}) = Wmd;
+    end
+end
+% Calculation of volume and mass of milled area 
+
+for i = 1:7
+    for j = 1:71
+       % milled volume
+       Wearing_V_2prc.(fC{i}) = (m_PA_C_cdf.(fC{i})').*(wmd_d.(fpave_years{j}).(fC{i}));
+       
+       % milled amount
+       Wearing_kg_2prc.(fC{i}) = Bpmds.(fC{i}).*Wearing_V_2prc.(fC{i});
+
+    end
+end
+
+
+%%
+% Import paving history for roads that are no longer in-service due to
+% overlaying activities
+in_n99 = csvread('C:\Users\babake\Documents\MFA\paving\paving_history_99.csv',1,0);
+% Paving year
+py_n99 = in_n99(:,3);
+% Store the info with respect to the paving year
+for i=1:38
+    n = 0;
+    for j=1:length(in_n99)
+        if fy(i) == py_n99(j)
+            n = n+1;
+            Hin_n99.(fpave_years{i}) (n,:) = in_n99(j,:);
+        end
+    end
+end
+% % Calculating colume for paved roads that are no longer in-service due to overlaying 
+for i = 1:38
+    AC_n99 = [];
+    AC_n99 = Hin_n99.(fpave_years{i})(:,5);
+    for j = 1:7
+        k = [];
+        a = [];
+        k = Hin_n99.(fpave_years{i})(AC_n99==j,:);
+        [kr,kc] = size(k);
+        a = zeros(kr:1);
+        for w = 1:kr
+            an(w,:) = sum(k(w,1))*sum(k(w,6))*sum(k(w,2)/1000);
+        end
+        if exist('an') ~= 1|| isempty(an)
+            A_Hin_n99.(fpave_years{i}).(fC{j})(1,1) = 0;
+        else
+            A_Hin_n99.(fpave_years{i}).(fC{j})(1,1) = sum(an);
+        end
+    end
+end
+
+
+%%
+% Assessing the distribution of lifetime for the initial outputs for ...
+% each year
+for w = 1:length(y)-1
+    Out_vecP = Hin(w)*wblpdf(x,sh,sc);
+    Ini_outP(w,:) = [zeros(1,w) Out_vecP(1,2:length(y)-w+1)];
+    Out_vecC = Hin(w)*wblcdf(x,sh,sc);
+    Ini_outC(w,:) = [zeros(1,w) Out_vecC(1,2:length(y)-w+1)];
+end
+
+
+% Share and depth of roads milled at the end of the lifetime
+
+
+% sec_input_1
+% sec_input_2
+% sec_input_3
+% sec_input_4
+% sec_input_5
+% sec_input_6
+% sec_input_7
+
+
+%% mat
+% multiply thickness, width, length, and material density.
+
+for i = 1:length(in_years)
+    ps.(in_years{i}) = ((sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1))+...
+                        (sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1))+...
+                        (sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1))+...
+                        (sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1).*sps.(in_years{i})(:,1)));
+end
+
+%% Calculate the Weibull lives in different traffic classes for the baseline scenario
+clc
+clear all
+% importing data
+WB_TC1_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC1_Par_Base.csv',1,1);
+WB_TC2_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC2_Par_Base.csv',1,1);
+WB_TC3_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC3_Par_Base.csv',1,1);
+WB_TC4_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC4_Par_Base.csv',1,1);
+WB_TC5_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC5_Par_Base.csv',1,1);
+WB_TC6_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC6_Par_Base.csv',1,1);
+WB_TC7_Base = csvread('C:\Users\babake\Documents\MFA\WB\TC7_Par_Base.csv',1,1);
+% time period
+x= 0:100;
+% Shape and scale parameters
+sh1 = WB_TC1_Base(2);
+sc1 = WB_TC1_Base(1);
+sh2 = WB_TC2_Base(2);
+sc2 = WB_TC2_Base(1);
+sh3 = WB_TC3_Base(2);
+sc3 = WB_TC3_Base(1);
+sh4 = WB_TC4_Base(2);
+sc4 = WB_TC4_Base(1);
+sh5 = WB_TC5_Base(2);
+sc5 = WB_TC5_Base(1);
+sh6 = WB_TC6_Base(2);
+sc6 = WB_TC6_Base(1);
+sh7 = WB_TC7_Base(2);
+sc7 = WB_TC7_Base(1);
+% Probability density function 
+
+wb1=wblpdf(x,sh1,sc1);
+wb2=wblpdf(x,sh2,sc2);
+wb3=wblpdf(x,sh3,sc3);
+wb4=wblpdf(x,sh4,sc4);
+wb5=wblpdf(x,sh5,sc5);
+wb6=wblpdf(x,sh6,sc6);
+wb7=wblpdf(x,sh7,sc7);
+
+cwb1=wblcdf(x,sh1,sc1);
+cwb2=wblcdf(x,sh2,sc2);
+cwb3=wblcdf(x,sh3,sc3);
+cwb4=wblcdf(x,sh4,sc4);
+cwb5=wblcdf(x,sh5,sc5);
+cwb6=wblcdf(x,sh6,sc6);
+cwb7=wblcdf(x,sh7,sc7);
+
+wb1_0 = find(wb1 <= (10^-3));
+wb2_0 = find(wb2 <= (10^-3));
+wb3_0 = find(wb3 <= (10^-3));
+wb4_0 = find(wb4 <= (10^-3));
+wb5_0 = find(wb5 <= (10^-3));
+wb6_0 = find(wb6 <= (10^-3));
+wb7_0 = find(wb7 <= (10^-3));
+
+wb_base = [wb1_0(2) wb2_0(2) wb3_0(2) wb4_0(2) wb5_0(2) wb6_0(2) wb7_0(2)];
+%csvwrite('...\wb_base.csv',wb_base)
+
+%% Calculate the Weibull lives in different traffic classes for the Upper bound scenario
+clc
+clear all
+% importing data
+WB_TC1_LB = csvread('C:\Users\babake\Documents\MFA\WB\TC1_Par_LB.csv',1,1);
+WB_TC2_LB = csvread('C:\Users\babake\Documents\MFA\WB\TC2_Par_LB.csv',1,1);
+WB_TC3_LB = csvread('C:\Users\babake\Documents\MFA\WB\TC3_Par_LB.csv',1,1);
+WB_TC4_LB = csvread('C:\Users\babake\Documents\MFA\WB\TC4_Par_LB.csv',1,1);
+WB_TC5_LB = csvread('C:\Users\babake\Documents\MFA\WB\TC5_Par_LB.csv',1,1);
+WB_TC6_LB = csvread('C:\Users\babake\Documents\MFA\WB\TC6_Par_LB.csv',1,1);
+WB_TC7_LB = csvread('C:\Users\babake\Documents\MFA\WB\TC7_Par_LB.csv',1,1);
+% time period
+x= 0:100;
+% Shape and scale parameters
+sh1 = WB_TC1_LB(2);
+sc1 = WB_TC1_LB(1);
+sh2 = WB_TC2_LB(2);
+sc2 = WB_TC2_LB(1);
+sh3 = WB_TC3_LB(2);
+sc3 = WB_TC3_LB(1);
+sh4 = WB_TC4_LB(2);
+sc4 = WB_TC4_LB(1);
+sh5 = WB_TC5_LB(2);
+sc5 = WB_TC5_LB(1);
+sh6 = WB_TC6_LB(2);
+sc6 = WB_TC6_LB(1);
+sh7 = WB_TC7_LB(2);
+sc7 = WB_TC7_LB(1);
+% Probability density function 
+
+wb1=wblpdf(x,sh1,sc1);
+wb2=wblpdf(x,sh2,sc2);
+wb3=wblpdf(x,sh3,sc3);
+wb4=wblpdf(x,sh4,sc4);
+wb5=wblpdf(x,sh5,sc5);
+wb6=wblpdf(x,sh6,sc6);
+wb7=wblpdf(x,sh7,sc7);
+
+wb1_0 = find(wb1 <= (10^-3));
+wb2_0 = find(wb2 <= (10^-3));
+wb3_0 = find(wb3 <= (10^-3));
+wb4_0 = find(wb4 <= (10^-3));
+wb5_0 = find(wb5 <= (10^-3));
+wb6_0 = find(wb6 <= (10^-3));
+wb7_0 = find(wb7 <= (10^-3));
+
+wb_LB = [wb1_0(2) wb2_0(2) wb3_0(2) wb4_0(2) wb5_0(2) wb6_0(2) wb7_0(2)];
+%csvwrite('...\wb_base.csv',wb_LB)
+
+%% Calculate the Weibull lives in different traffic classes for the Upper bound scenario
+clc
+clear all
+% importing data
+WB_TC1_UB = csvread('C:\Users\babake\Documents\MFA\WB\TC1_Par_UB.csv',1,1);
+WB_TC2_UB = csvread('C:\Users\babake\Documents\MFA\WB\TC2_Par_UB.csv',1,1);
+WB_TC3_UB = csvread('C:\Users\babake\Documents\MFA\WB\TC3_Par_UB.csv',1,1);
+WB_TC4_UB = csvread('C:\Users\babake\Documents\MFA\WB\TC4_Par_UB.csv',1,1);
+WB_TC5_UB = csvread('C:\Users\babake\Documents\MFA\WB\TC5_Par_UB.csv',1,1);
+WB_TC6_UB = csvread('C:\Users\babake\Documents\MFA\WB\TC6_Par_UB.csv',1,1);
+WB_TC7_UB = csvread('C:\Users\babake\Documents\MFA\WB\TC7_Par_UB.csv',1,1);
+% time period
+x= 0:100;
+% Shape and scale parameters
+sh1 = WB_TC1_UB(2);
+sc1 = WB_TC1_UB(1);
+sh2 = WB_TC2_UB(2);
+sc2 = WB_TC2_UB(1);
+sh3 = WB_TC3_UB(2);
+sc3 = WB_TC3_UB(1);
+sh4 = WB_TC4_UB(2);
+sc4 = WB_TC4_UB(1);
+sh5 = WB_TC5_UB(2);
+sc5 = WB_TC5_UB(1);
+sh6 = WB_TC6_UB(2);
+sc6 = WB_TC6_UB(1);
+sh7 = WB_TC7_UB(2);
+sc7 = WB_TC7_UB(1);
+% Probability density function 
+
+wb1=wblpdf(x,sh1,sc1);
+wb2=wblpdf(x,sh2,sc2);
+wb3=wblpdf(x,sh3,sc3);
+wb4=wblpdf(x,sh4,sc4);
+wb5=wblpdf(x,sh5,sc5);
+wb6=wblpdf(x,sh6,sc6);
+wb7=wblpdf(x,sh7,sc7);
+
+wb1_0 = find(wb1 <= (10^-3));
+wb2_0 = find(wb2 <= (10^-3));
+wb3_0 = find(wb3 <= (10^-3));
+wb4_0 = find(wb4 <= (10^-3));
+wb5_0 = find(wb5 <= (10^-3));
+wb6_0 = find(wb6 <= (10^-3));
+wb7_0 = find(wb7 <= (10^-3));
+
+wb_UB = [wb1_0(2) wb2_0(2) wb3_0(2) wb4_0(2) wb5_0(2) wb6_0(2) wb7_0(2)];
+%csvwrite('...\wb_base.csv',wb_UB)
+
+%% Length of paved roads in each year
+PLin = csvread('C:\Users\babake\Documents\GIS_data\NVDB\2018\excel\ref_traf_v4_tot.csv',1,0);
+
+y = 1980:2050;
+% Convereting integers to an array of strings
+yrs = strtrim(cellstr(num2str(y'))');
+% Add prefix to the created string arrey
+in_years = strcat('Year_',yrs);
+out_years = strcat('Year_',yrs);
+
+% initial year
+ini_y = 1980;
+
+for i=1:38
+    [rrr,ccc] = size(PLin); 
+    n = 0;
+    for j = 1:rrr
+        dum = [];
+        dif = [];
+        n = n + 1;
+        if PLin(j,1) <= ini_y && PLin(j,2) >= ini_y
+            if PLin(j,6)-PLin(j,1) == 1
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum; 
+            elseif PLin(j,6)-PLin(j,1) == 0
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum;
+            elseif PLin(j,6)-PLin(j,1) < 0
+                dif = PLin(j,6)-PLin(j,1);
+                dum = PLin(j,[3:4 7+abs(dif)]);
+                PL.(in_years{i})(n,:) = dum;
+            elseif PLin(j,6)-PLin(j,1) > 0
+                dif = PLin(j,6)-PLin(j,1);
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum;
+            end
+        end
+    end
+    ini_y = ini_y + 1;
+end
+% Traffic wont grow after 2017
+
+% for  i = 39
+%     [rrr,ccc] = size(PL.(out_years{i-1}));
+%     for n =1:rrr
+%         tgr = PL.(out_years{i-1})(n,:);
+%         PL.(out_years{i})(n,:) = tgr;
+%     end
+% end
+
+% multiplying length with AADT for each section
+for i = 1:38
+    [rrr,ccc] = size(PL.(in_years{i}));
+    a = [];
+    a = zeros(rrr:1);
+    for j = 1:rrr
+        a(j,:) = PL.(in_years{i})(j,2)*PL.(in_years{i})(j,3);
+    end
+    fPL_base(i,1) = sum(a);   
+end
+
+%% Length of paved roads in each year (1% increase)
+PLin = csvread('C:\Users\babake\Documents\GIS_data\NVDB\2018\excel\ref_traf_v4_tot.csv',1,0);
+
+y = 1980:2050;
+% Convereting integers to an array of strings
+yrs = strtrim(cellstr(num2str(y'))');
+% Add prefix to the created string arrey
+in_years = strcat('Year_',yrs);
+out_years = strcat('Year_',yrs);
+
+% initial year
+ini_y = 2017;
+
+for i=38
+    [rrr,ccc] = size(PLin); 
+    n = 0;
+    for j = 1:rrr
+        dum = [];
+        dif = [];
+        n = n + 1;
+        if PLin(j,1) <= ini_y && PLin(j,2) >= ini_y
+            if PLin(j,6)-PLin(j,1) == 1
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum; 
+            elseif PLin(j,6)-PLin(j,1) == 0
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum;
+            elseif PLin(j,6)-PLin(j,1) < 0
+                dif = PLin(j,6)-PLin(j,1);
+                dum = PLin(j,[3:4 7+abs(dif)]);
+                PL.(in_years{i})(n,:) = dum;
+            elseif PLin(j,6)-PLin(j,1) > 0
+                dif = PLin(j,6)-PLin(j,1);
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum;
+            end
+        end
+    end
+    ini_y = ini_y + 1;
+end
+
+% Traffic is growing by 1% after 2017
+
+for  i = 39:71
+    [rrr,ccc] = size(PL.(out_years{i-1}));
+    for n =1:rrr
+        tgr_1 = PL.(out_years{i-1})(n,1:2);
+        tgr_2 = PL.(out_years{i-1})(n,3);
+        PL.(out_years{i})(n,:) = [tgr_1 (tgr_2*1.01)];
+    end
+end
+
+% multiplying length with AADT for each section
+for i = 39:71
+    [rrr,ccc] = size(PL.(in_years{i}));
+    a = [];
+    a = zeros(rrr:1);
+    for j = 1:rrr
+        a(j,:) = PL.(in_years{i})(j,2)*PL.(in_years{i})(j,3);
+    end
+    fPL_1prc(i,1) = sum(a);   
+end
+
+%% Length of paved roads in each year (2% increase)
+PLin = csvread('C:\Users\babake\Documents\GIS_data\NVDB\2018\excel\ref_traf_v4_tot.csv',1,0);
+
+y = 1980:2050;
+% Convereting integers to an array of strings
+yrs = strtrim(cellstr(num2str(y'))');
+% Add prefix to the created string arrey
+in_years = strcat('Year_',yrs);
+out_years = strcat('Year_',yrs);
+
+% initial year
+ini_y = 2017;
+
+for i=38
+    [rrr,ccc] = size(PLin); 
+    n = 0;
+    for j = 1:rrr
+        dum = [];
+        dif = [];
+        n = n + 1;
+        if PLin(j,1) <= ini_y && PLin(j,2) >= ini_y
+            if PLin(j,6)-PLin(j,1) == 1
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum; 
+            elseif PLin(j,6)-PLin(j,1) == 0
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum;
+            elseif PLin(j,6)-PLin(j,1) < 0
+                dif = PLin(j,6)-PLin(j,1);
+                dum = PLin(j,[3:4 7+abs(dif)]);
+                PL.(in_years{i})(n,:) = dum;
+            elseif PLin(j,6)-PLin(j,1) > 0
+                dif = PLin(j,6)-PLin(j,1);
+                dum = PLin(j,[3:4 7]);
+                PL.(in_years{i})(n,:) = dum;
+            end
+        end
+    end
+    ini_y = ini_y + 1;
+end
+
+% Traffic is growing by 2% after 2017
+
+for  i = 39:71
+    [rrr,ccc] = size(PL.(out_years{i-1}));
+    for n =1:rrr
+        tgr_1 = PL.(out_years{i-1})(n,1:2);
+        tgr_2 = PL.(out_years{i-1})(n,3);
+        PL.(out_years{i})(n,:) = [tgr_1 (tgr_2*1.02)];
+    end
+end
+
+% multiplying length with AADT for each section
+for i = 39:71
+    [rrr,ccc] = size(PL.(in_years{i}));
+    a = [];
+    a = zeros(rrr:1);
+    for j = 1:rrr
+        a(j,:) = PL.(in_years{i})(j,2)*PL.(in_years{i})(j,3);
+    end
+    fPL_2prc(i,1) = sum(a);   
+end
+
+%% Traffic is growing by 2% after 2017
+
+for  i = 39:71
+    [rrr,ccc] = size(PL.(out_years{38}));
+    for n =1:rrr
+        tgr_1 = PL.(out_years{38})(n,1:2);
+        tgr_2 = PL.(out_years{38})(n,3);
+        PL.(out_years{i})(n,:) = [tgr_1 (tgr_2*1.02)];
+    end
+end
